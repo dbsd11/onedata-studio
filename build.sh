@@ -9,10 +9,10 @@
  for dockerFile in `find . -type f -name 'Dockerfile'`
  do
    dockerFileHome=`cd $(dirname $dockerFile); pwd`    
-   docker build . -t `echo $dockerFileHome | awk -F "onedata-studio/" '{print $NF}'`
+   docker build $dockerFileHome -t `echo $dockerFileHome | awk -F "onedata-studio/" '{print $NF}'`
    cd $current_path
  done
  cd $current_path
 
  #start 
- #docker-compose up -d 
+ docker-compose up -d 

@@ -1,117 +1,127 @@
 version: "3.8"
 services:
-  flink:
-     image: iaas/flink
-     ports:
-       - "8081"
-     networks:
-       - "local"
-     volumes:
-        - "/opt/flink:/opt/flink"
-     network_mode: "bridge"
-     deploy:
-       replicas: 1
-       update_config:
-         parallelism: 1
-         delay: 10s
-       restart_policy:
-         condition: on-failure
-  kafka:
-     image: iaas/kafka
-     ports:
-        - "9092"
-     networks:
-        - "local"
-     volumes:
-         - "/opt/kafka:/opt/kafka"
-     network_mode: "bridge"
-     deploy:
-       replicas: 1
-       update_config:
-         parallelism: 1
-         delay: 10s
-       restart_policy:
-         condition: on-failure
-   mqtt:
-     image: iaas/mqtt
-     ports:
-        - "1883"
-     networks:
-        - "local"
-     volumes:
-         - "/opt/mqtt:/opt/mqtt"
-     network_mode: "bridge"
-     deploy:
-       replicas: 1
-       update_config:
-         parallelism: 1
-         delay: 10s
-       restart_policy:
-         condition: on-failure
-   redis:
-     image: iaas/redis
-     ports:
-        - "6379"
-     networks:
-        - "local"
-     volumes:
-         - "/opt/redis:/opt/redis"
-     network_mode: "bridge"
-     deploy:
-       replicas: 1
-       update_config:
-         parallelism: 1
-         delay: 10s
-       restart_policy:
-         condition: on-failure
-   data-layer:
-     image: daas/data-layer
-     ports:
-        - "50000"
-     networks:
-        - "local"
-     volumes:
-         - "/opt/data-layer:/opt/data-layer"
-     network_mode: "bridge"
-     deploy:
-       replicas: 1
-       update_config:
-         parallelism: 1
-         delay: 10s
-       restart_policy:
-         condition: on-failure
-   data-warehouse:
-     image: paas/data-warehouse
-     ports:
-        - "51000"
-     networks:
-        - "local"
-     volumes:
-         - "/opt/data-warehouse:/opt/data-warehouse"
-     network_mode: "bridge"
-     deploy:
-       replicas: 1
-       update_config:
-         parallelism: 1
-         delay: 10s
-       restart_policy:
-         condition: on-failure
-   query-platform:
-     image: paas/query-platform
-     ports:
-        - "52000"
-     networks:
-        - "local"
-     volumes:
-         - "/opt/query-platform:/opt/query-platform"
-     network_mode: "bridge"
-     deploy:
-       replicas: 1
-       update_config:
-         parallelism: 1
-         delay: 10s
-       restart_policy:
-         condition: on-failure
+    kafka:
+        image: iaas/kafka
+        ports:
+            - "9092"
+        networks:
+            - "local"
+        volumes:
+            - "/opt/kafka:/opt/kafka"
+        #network_mode: "bridge"
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+    mqtt:
+        image: iaas/mqtt
+        ports:
+            - "1883"
+        networks:
+            - "local"
+        volumes:
+            - "/opt/mqtt:/opt/mqtt"
+        #network_mode: "bridge"
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+    redis:
+        image: iaas/redis
+        ports:
+            - "6379"
+        networks:
+            - "local"
+        volumes:
+            - "/opt/redis:/opt/redis"
+        #network_mode: "bridge"
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+    flink:
+        image: iaas/flink
+        links:
+            - kafka
+            - mqtt
+            - redis
+            - data-warehouse
+        ports:
+            - "8081"
+        networks:
+            - "local"
+        volumes:
+            - "/opt/flink:/opt/flink"
+        #network_mode: "bridge"
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+    data-warehouse:
+        image: paas/data-warehouse
+        ports:
+            - "51000"
+        networks:
+            - "local"
+        volumes:
+            - "/opt/data-warehouse:/opt/data-warehouse"
+        #network_mode: "bridge"
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+    query-platform:
+        image: paas/query-platform
+        links:
+            - data-warehouse
+        ports:
+            - "52000"
+        networks:
+            - "local"
+        volumes:
+            - "/opt/query-platform:/opt/query-platform"
+        #network_mode: "bridge"
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+    data-layer:
+        image: daas/data-layer
+        links:
+            - query-platform
+            - redis
+        ports:
+            - "50000"
+        networks:
+            - "local"
+        volumes:
+            - "/opt/data-layer:/opt/data-layer"
+        #network_mode: "bridge"
+        deploy:
+            replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: on-failure
 
 networks:
    local:
