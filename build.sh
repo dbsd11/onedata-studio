@@ -8,10 +8,14 @@
  current_path=.
  for dockerFile in `find . -type f -name 'Dockerfile'`
  do
+   echo "run docker build $dockerFileHome"
    dockerFileHome=`cd $(dirname $dockerFile); pwd`    
-   docker build $dockerFileHome -t `echo $dockerFileHome | awk -F "onedata-studio/" '{print $NF}'`
+   docker build --force-rm $dockerFileHome -t `echo $dockerFileHome | awk -F "onedata-studio/" '{print $NF}'`
    cd $current_path
  done
+ echo "docker rmi with filter: dangling=true"
+ docker rmi -f $(docker images --filter dangling=true -q)
+
  cd $current_path
 
  #start 

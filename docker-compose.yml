@@ -6,9 +6,14 @@ services:
             - "9092"
         networks:
             - "local"
-        volumes:
-            - "/opt/kafka:/opt/kafka"
         #network_mode: "bridge"
+        volumes:
+            - "/opt/zookeeper-3.7.0/conf:/opt/zookeeper-3.7.0/conf"
+            - "/opt/zookeeper-3.7.0/data:/opt/zookeeper-3.7.0/data"
+            - "/opt/kafka/kafka-logs:/opt/kafka/kafka-logs"
+        environment: 
+            - KAFKA_ZOOKEEPER_CONNECT=localhost:2181
+            - KAFKA_ADVERTISED_HOST_NAME=kafka
         deploy:
             replicas: 1
             update_config:
