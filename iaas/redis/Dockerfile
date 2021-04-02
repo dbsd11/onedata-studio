@@ -1,1 +1,1 @@
-FROM openjdk:8u265
+FROM redis:latest

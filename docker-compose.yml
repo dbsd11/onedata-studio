@@ -23,13 +23,18 @@ services:
                 condition: on-failure
     mqtt:
         image: iaas/mqtt
+        links:
+            - kafka
         ports:
             - "1883"
         networks:
             - "local"
+        #network_mode: "bridge"
         volumes:
             - "/opt/mqtt:/opt/mqtt"
-        #network_mode: "bridge"
+        environment:
+            - KAFKA_MQTT_BOOTSTRAP_SERVERS=PLAINTEXT://kafka:9092
+            - KAFKA_MQTT_TOPIC_REGEX_LIST=mqtt-msg:.*
         deploy:
             replicas: 1
             update_config:
@@ -43,9 +48,9 @@ services:
             - "6379"
         networks:
             - "local"
-        volumes:
-            - "/opt/redis:/opt/redis"
         #network_mode: "bridge"
+        volumes:
+            - "/opt/redis/data:/data"
         deploy:
             replicas: 1
             update_config:
@@ -64,9 +69,10 @@ services:
             - "8081"
         networks:
             - "local"
-        volumes:
-            - "/opt/flink:/opt/flink"
         #network_mode: "bridge"
+        volumes:
+            - "/opt/flink/log:/opt/flink/log"
+            - "/opt/flink/data:/opt/flink/data"
         deploy:
             replicas: 1
             update_config:
@@ -77,12 +83,12 @@ services:
     data-warehouse:
         image: paas/data-warehouse
         ports:
-            - "51000"
+            - "51000:51000"
         networks:
             - "local"
+        #network_mode: "bridge"
         volumes:
             - "/opt/data-warehouse:/opt/data-warehouse"
-        #network_mode: "bridge"
         deploy:
             replicas: 1
             update_config:
@@ -95,12 +101,12 @@ services:
         links:
             - data-warehouse
         ports:
-            - "52000"
+            - "52000:52000"
         networks:
             - "local"
+        #network_mode: "bridge"
         volumes:
             - "/opt/query-platform:/opt/query-platform"
-        #network_mode: "bridge"
         deploy:
             replicas: 1
             update_config:
@@ -114,12 +120,12 @@ services:
             - query-platform
             - redis
         ports:
-            - "50000"
+            - "50000:50000"
         networks:
             - "local"
+        #network_mode: "bridge"
         volumes:
             - "/opt/data-layer:/opt/data-layer"
-        #network_mode: "bridge"
         deploy:
             replicas: 1
             update_config:
