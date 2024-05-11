@@ -1,6 +1,6 @@
-FROM wurstmeister/kafka:latest
+FROM gwilym/wurstmeister-kafka-docker # adrianmontagu/wurstmeister-kafka:latest for arm64
 
-ENV ZOOKEEPER_VERSION 3.7.0
+ENV ZOOKEEPER_VERSION 3.7.2
 
 #Download Zookeeper
 RUN wget -q https://downloads.apache.org/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/apache-zookeeper-${ZOOKEEPER_VERSION}-bin.tar.gz -O zookeeper-${ZOOKEEPER_VERSION}.tar.gz && \
